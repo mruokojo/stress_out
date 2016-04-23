@@ -5,14 +5,24 @@ require 'net/sftp'
 require 'ap'
 require 'dotenv'
 require 'rollbar'
-
+require 'sequel'
+require 'tiny_tds'
 Dotenv.load
+
+
+client = TinyTds::Client.new username: ENV['db_user'], password: ENV['db_pw'],
+                             host: ENV['db_address'],
+                             port: 1433, database: 'dbStressOut', azure: true
+
+ap "is client active: #{client.active?}"
+exit
 
 av_session = AVCapture::Session.new
 dev = AVCapture.devices.find(&:video?)
 
 p dev.name
 p dev.video?
+
 
 av_session.run_with(dev) do |connection|
   2.times do |i|

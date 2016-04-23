@@ -15,6 +15,8 @@ source 'https://rubygems.org' do
   gem 'dotenv'
   gem 'rollbar'
   gem 'rack'
+  gem 'sequel'
+  gem 'tiny_tds'
 end
 
 source 'https://rails-assets.org' do
