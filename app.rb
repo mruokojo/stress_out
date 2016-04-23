@@ -30,10 +30,7 @@ emotions= DB[:tblEmotions]
 
 av_session = AVCapture::Session.new
 dev = AVCapture.devices.find(&:video?)
-
-p dev.name
-p dev.video?
-
+p "Camera name is #{dev.name}"
 
 av_session.run_with(dev) do |connection|
   2.times do |i|
@@ -51,54 +48,63 @@ av_session.run_with(dev) do |connection|
         sftp.upload!(img_filename, "public_html/stressout/#{img_name}")
       end
       url="http://www.nomenal.fi/stressout/#{img_name}"
-      puts "Analyzing picture #{url}..."
+      puts 'Analyzing faces in picture...'
       results=HTTParty.post('https://api.projectoxford.ai/face/v1.0/detect?returnFaceAttributes=age,gender,glasses,headPose,smile,facialHair',
                             body: {'url' => url}.to_json,
                             headers: {'Ocp-Apim-Subscription-Key' => ENV['msft_face_key'],
                                       'Content-Type' => 'application/json'})
 
 
-      ap results
-      # Emotions
-
-      results=HTTParty.post('https://api.projectoxford.ai/emotion/v1.0/recognize',
-                            body: {'url' => url}.to_json,
-                            headers: {'Ocp-Apim-Subscription-Key' => ENV['msft_emotion_key'],
-                                      'Content-Type' => 'application/json'})
-
-      ap results
-      results.each do |emotion_record|
-        emotions.insert(
-            :anger => emotion_record['scores']['anger'],
-            :contempt => emotion_record['scores']['contempt'],
-            :disgust => emotion_record['scores']['disgust'],
-            :fear => emotion_record['scores']['fear'],
-            :happiness => emotion_record['scores']['happiness'],
-            :neutral => emotion_record['scores']['neutral'],
-            :sadness => emotion_record['scores']['sadness'],
-            :surprise => emotion_record['scores']['surprise'],
+      results.each do |fr|
+        ap fr
+        faces.insert(
+            :face_id => fr['faceId'],
+            :top => fr['faceRectangle']['top'],
+            :left => fr['faceRectangle']['left'],
+            :width => fr['faceRectangle']['width'],
+            :height => fr['faceRectangle']['height'],
+            :smile => fr['faceAttributes']['smile'],
+            :pitch => fr['faceAttributes']['pitch'],
+            :roll => fr['faceAttributes']['roll'],
+            :yaw => fr['faceAttributes']['yaw'],
+            :gender => fr['faceAttributes']['gender'],
+            :age => fr['faceAttributes']['age'],
+            :moustache => fr['faceAttributes']['facialHair']['moustache'],
+            :beard => fr['faceAttributes']['facialHair']['beard'],
+            :side_burns => fr['faceAttributes']['facialHair']['sideburns'],
+            :glasses => fr['faceAttributes']['glasses'],
             :created_at => Time.now,
             :updated_at => Time.now
         )
       end
 
-      # results=HTTParty.post("https://api.kairos.com/media?timeout=0&source=http://www.nomenal.fi/stressout/#{img_filename}",
-      #                       headers: {
-      #                           'app_id' => ENV['kairos_app'],
-      #                           'app_key' => ENV['kairos_key']})
-      # media_id = results['id']
-      # File.open('media-ids.txt', 'a') { |f|
-      #   f.puts media_id
-      # }
-      #
-      # while results['status_code'] == '2' && media_id
-      #   sleep 5
-      #   results=HTTParty.get("https://api.kairos.com/media/#{media_id}",
-      #                        headers: {
-      #                            'app_id' => ENV['kairos_app'],
-      #                            'app_key' => ENV['kairos_key']})
-      #   ap results
-      # end
+      puts 'Analyzing emotions in picture...'
+      # Emotions
+      results=HTTParty.post('https://api.projectoxford.ai/emotion/v1.0/recognize',
+                            body: {'url' => url}.to_json,
+                            headers: {'Ocp-Apim-Subscription-Key' => ENV['msft_emotion_key'],
+                                      'Content-Type' => 'application/json'})
+
+      results.each do |er|
+        emotions.insert(
+            :height => er['faceRectangle']['height'],
+            :left => er['faceRectangle']['left'],
+            :top => er['faceRectangle']['top'],
+            :width => er['faceRectangle']['width'],
+
+            :contempt => er['scores']['contempt'],
+            :disgust => er['scores']['disgust'],
+            :fear => er['scores']['fear'],
+            :happiness => er['scores']['happiness'],
+            :neutral => er['scores']['neutral'],
+            :sadness => er['scores']['sadness'],
+            :surprise => er['scores']['surprise'],
+            :created_at => Time.now,
+            :updated_at => Time.now
+        )
+        puts 'New emotion inserted'
+        ap er
+      end
     end
     #sleep 1
   end
