@@ -10,12 +10,23 @@ require 'tiny_tds'
 Dotenv.load
 
 
-client = TinyTds::Client.new username: ENV['db_user'], password: ENV['db_pw'],
-                             host: ENV['db_address'],
-                             port: 1433, database: 'dbStressOut', azure: true
+# client = TinyTds::Client.new username: ENV['db_user'], password: ENV['db_pw'],
+#                              host: ENV['db_address'],
+#                              port: 1433, database: 'dbStressOut', azure: true
+#
+# ap "is client active: #{client.active?}"
 
-ap "is client active: #{client.active?}"
-exit
+
+puts "Connecting to database at #{ENV['db_address']}..."
+DB = Sequel.connect(adapter: 'tinytds', host: ENV['db_address'], database: 'dbStressOut', user: ENV['db_user'], password: ENV['db_pw'], azure: true)
+# DB['SELECT * FROM dbo.tblEmotions'].all do |row|
+#   ap row
+# end
+
+faces=DB[:tblFaces]
+emotions= DB[:tblEmotions]
+
+#exit
 
 av_session = AVCapture::Session.new
 dev = AVCapture.devices.find(&:video?)
@@ -56,6 +67,20 @@ av_session.run_with(dev) do |connection|
                                       'Content-Type' => 'application/json'})
 
       ap results
+      results.each do |emotion_record|
+        emotions.insert(
+            :anger => emotion_record['scores']['anger'],
+            :contempt => emotion_record['scores']['contempt'],
+            :disgust => emotion_record['scores']['disgust'],
+            :fear => emotion_record['scores']['fear'],
+            :happiness => emotion_record['scores']['happiness'],
+            :neutral => emotion_record['scores']['neutral'],
+            :sadness => emotion_record['scores']['sadness'],
+            :surprise => emotion_record['scores']['surprise'],
+            :created_at => Time.now,
+            :updated_at => Time.now
+        )
+      end
 
       # results=HTTParty.post("https://api.kairos.com/media?timeout=0&source=http://www.nomenal.fi/stressout/#{img_filename}",
       #                       headers: {
