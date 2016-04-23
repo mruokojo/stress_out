@@ -1,3 +1,4 @@
 .env
 .idea
 media-ids.txt
+shots/*.jpg
