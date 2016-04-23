@@ -1,0 +1,6 @@
+.DS_Store
+.env
+.idea
+media-ids.txt
+shots/*.jpg
+code.style.schemes.xml
