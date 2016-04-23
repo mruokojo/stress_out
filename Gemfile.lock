@@ -1,0 +1,77 @@
+GEM
+  remote: https://rubygems.org/
+  remote: https://rails-assets.org/
+  specs:
+    av_capture (1.0.2)
+    awesome_print (1.6.1)
+    capistrano (3.4.1)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (~> 1.3)
+    capistrano-bundler (1.1.4)
+      capistrano (~> 3.1)
+      sshkit (~> 1.2)
+    capistrano-pending (0.1.1)
+      capistrano (>= 3.2.0)
+    capistrano-rvm (0.1.2)
+      capistrano (~> 3.0)
+      sshkit (~> 1.2)
+    chronic (0.10.2)
+    dotenv (2.1.1)
+    faraday (0.8.11)
+      multipart-post (~> 1.2.0)
+    faraday_middleware (0.8.8)
+      faraday (>= 0.7.4, < 0.9)
+    hashie (1.2.0)
+    highline (1.7.8)
+    httparty (0.13.7)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    i18n (0.7.0)
+    json (1.8.3)
+    kairos-api (0.0.2)
+      faraday (~> 0.8.0)
+      faraday_middleware (~> 0.8.7)
+      hashie (~> 1.2.0)
+      multi_json (~> 1.3)
+    magic_encoding (0.0.2)
+    multi_json (1.11.2)
+    multi_xml (0.5.5)
+    multipart-post (1.2.0)
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
+    net-sftp (2.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (3.1.1)
+    rack (1.6.4)
+    rake (11.1.2)
+    rollbar (2.10.0)
+      multi_json
+    sshkit (1.10.0)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
+    whenever (0.9.4)
+      chronic (>= 0.6.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  av_capture!
+  awesome_print!
+  capistrano!
+  capistrano-bundler!
+  capistrano-pending!
+  capistrano-rvm!
+  dotenv!
+  highline!
+  httparty!
+  kairos-api!
+  magic_encoding!
+  net-sftp!
+  rack!
+  rollbar!
+  whenever!
+
+BUNDLED WITH
+   1.11.2
