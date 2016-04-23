@@ -1,0 +1,5 @@
+.env
+.idea
+media-ids.txt
+shots/*.jpg
+.DS_Store
